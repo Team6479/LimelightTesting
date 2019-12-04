@@ -14,7 +14,8 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
 /**
- * Add your docs here.
+ * A basic arcade drive
+ * @author Leo Wilson
  */
 public class Drivetrain extends Subsystem {
   private WPI_TalonSRX left0;

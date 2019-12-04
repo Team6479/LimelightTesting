@@ -1,11 +1,9 @@
 package frc.robot;
 
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Limelight;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -16,6 +14,7 @@ import frc.robot.subsystems.Drivetrain;
 public class Robot extends TimedRobot {
 
   public Drivetrain drivetrain;
+  public Limelight limelight;
 
   // private XboxController m_Controller = new XboxController(0);
 
@@ -30,6 +29,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     drivetrain = new Drivetrain();
+    limelight = new Limelight();
   }
 
   /**
@@ -97,16 +97,14 @@ public class Robot extends TimedRobot {
     final double ACCELERATED_STEER_AREA = 17;
     final double ACCELERATED_STEER_K = 0.02;
     final double MAX_DRIVE = 0.4; // Simple speed limit so we don't drive too fast
-
-
-    double tv = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv").getDouble(0);
-    double tx = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getDouble(0);
+    
+    double tx = limelight.getXOffset();
     // double ty = Netwo+rkTableInstance.getDefault().getTable("limelight").getEntry("ty").getDouble(0);
     double ta = NetworkTableInstance.getDefault().getTable("limelight").getEntry("ta").getDouble(0);
     
     
 
-    if (tv < 1.0) {
+    if (!limelight.hasTarget()) {
       m_LimelightHasValidTarget = false;
       m_LimelightDriveCommand = 0.0;
       m_LimelightSteerCommand = 0.0;

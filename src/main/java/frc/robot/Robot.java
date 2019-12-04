@@ -5,6 +5,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import frc.robot.subsystems.Drivetrain;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -14,14 +15,7 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
  */
 public class Robot extends TimedRobot {
 
-
-  private WPI_TalonSRX m_Left0 = new WPI_TalonSRX(3);
-  private WPI_TalonSRX m_Left1 = new WPI_TalonSRX(4);
-  private WPI_TalonSRX m_Right0 = new WPI_TalonSRX(1);
-  private WPI_TalonSRX m_Right1 = new WPI_TalonSRX(2);
-  private SpeedControllerGroup m_LeftMotors = new SpeedControllerGroup(m_Left0, m_Left1);
-  private SpeedControllerGroup m_RightMotors = new SpeedControllerGroup(m_Right0, m_Right1);
-  private DifferentialDrive m_Drive = new DifferentialDrive(m_LeftMotors, m_RightMotors);
+  public Drivetrain drivetrain;
 
   // private XboxController m_Controller = new XboxController(0);
 
@@ -35,6 +29,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    drivetrain = new Drivetrain();
   }
 
   /**
@@ -73,9 +68,9 @@ public class Robot extends TimedRobot {
     Update_Limelight_Tracking();
 
     if (m_LimelightHasValidTarget) {
-      m_Drive.arcadeDrive(m_LimelightDriveCommand, m_LimelightSteerCommand);
+      drivetrain.arcadeDrive(m_LimelightDriveCommand, m_LimelightSteerCommand);
     } else {
-      m_Drive.arcadeDrive(0, 0);
+      drivetrain.arcadeDrive(0, 0);
     }
   }
 

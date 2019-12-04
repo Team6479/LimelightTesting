@@ -26,7 +26,7 @@ public class Limelight extends Subsystem {
     private Pipeline(int value) {
       this.value = value;
     }
-  }
+  };
 
   NetworkTable limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
 

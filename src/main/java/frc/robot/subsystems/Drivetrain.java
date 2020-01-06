@@ -8,16 +8,16 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-
+import com.team6479.lib.subsystems.TankDrive;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
-import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /**
  * A basic arcade drive
  * @author Leo Wilson
  */
-public class Drivetrain extends Subsystem {
+public class Drivetrain extends SubsystemBase implements TankDrive {
   private WPI_TalonSRX left0;
   private WPI_TalonSRX left1;
   private WPI_TalonSRX right0;
@@ -39,10 +39,15 @@ public class Drivetrain extends Subsystem {
   public void arcadeDrive(double speed, double rotation) {
     drivetrain.arcadeDrive(speed, rotation);
   }
-
+  
   @Override
-  public void initDefaultCommand() {
-    // Set the default command for a subsystem here.
-    // setDefaultCommand(new MySpecialCommand());
+  public void tankDrive(double leftSpeed, double rightSpeed) {
+    drivetrain.tankDrive(leftSpeed, rightSpeed);
   }
+  
+  @Override
+  public void stop() {
+    drivetrain.tankDrive(0, 0);
+  }
+
 }

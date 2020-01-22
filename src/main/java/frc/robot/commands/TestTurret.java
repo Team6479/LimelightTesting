@@ -7,12 +7,14 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Turret;
 
 public class TestTurret extends CommandBase {
   private final Turret turret;
   private double angle = 0;
+  private boolean state = false;
 
   /**
    * Creates a new TestTurret.
@@ -20,15 +22,19 @@ public class TestTurret extends CommandBase {
   public TestTurret(Turret turret) {
     this.turret = turret;
     addRequirements(this.turret);
+    Shuffleboard.getTab("Debug").addNumber("Goal", () -> angle);
+    angle = turret.getCurrentAngle();
   } 
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    if (turret.getCurrentAngle() < 180) {
-      angle = 360;
+    if (state) {
+      angle -= 60;
+      state = !state;
     } else {
-      angle = 0;
+      angle += 60;
+      state = !state;
     }
   }
 

@@ -12,7 +12,8 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.commands.AimTurret;
@@ -41,18 +42,23 @@ public class Turret extends SubsystemBase {
     // Add Mag Encoders
     motor.configSelectedFeedbackSensor(FeedbackDevice.PulseWidthEncodedPosition, 0, 0);
 
-    // Invert Motor to match Sensor Phase
+    // Set Inverted and Sensor Phase
     motor.setInverted(false);
     motor.setSensorPhase(false);
 
     // Set PID Values
-    motor.config_kP(0, 24);
-    // motor.config_kI(0, 0);
-    motor.config_kD(0, 240);
-    // motor.config_kF(0, .2);
+    motor.config_kP(0, 10.5);
+    motor.config_kI(0, .0001);
+    motor.config_kD(0, 25);
+    motor.config_kF(0, 0);
 
+    ShuffleboardTab debug = Shuffleboard.getTab("Debug");
+    debug.addNumber("Turret Encoder (Units)", motor::getSelectedSensorPosition);
+    debug.addNumber("Turret Encoder (Angle)", this::getCurrentAngle);
+    debug.addNumber("Turret Error", motor::getClosedLoopError);
 
     this.setDefaultCommand(new AimTurret(this));
+    // this.setDefaultCommand(new TestTurret(this));
   }
 
   /**
@@ -107,8 +113,5 @@ public class Turret extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called oncgbe per scheduler run
-    SmartDashboard.putNumber("Turret Encoder (Units)", motor.getSelectedSensorPosition());
-    SmartDashboard.putNumber("Turret Encoder (Angle)", getCurrentAngle());
-    SmartDashboard.putNumber("Turret Error", motor.getClosedLoopError());
   }
 }

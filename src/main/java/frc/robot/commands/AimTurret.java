@@ -30,7 +30,7 @@ public class AimTurret extends CommandBase {
   @Override
   public void execute() {
     if (Limelight.hasTarget()) {
-      double angle = (turret.getCurrentAngle() - Limelight.getXOffset()) % turret.getUpperLimit();
+      double angle = (turret.getCurrentAngle() + Limelight.getXOffset()) % turret.getUpperLimit();
 
       if (angle < turret.getLowerLimit()) {
         angle = turret.getLowerLimit();

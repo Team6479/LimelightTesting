@@ -9,7 +9,7 @@ package frc.robot.util;
 
 /**
  * A class for computing values along a logistic function
- * See the Desmos graph: https://www.desmos.com/calculator/5w0jn0r4jt
+ * See the Desmos graph: https://www.desmos.com/calculator/mjfwqn4jif
  * @author Leo Wilson
  */
 public class Sigmoid {

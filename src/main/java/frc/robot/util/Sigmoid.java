@@ -41,4 +41,12 @@ public class Sigmoid {
         h = hshift;
         k = vshift;
     }
+
+    /**
+     * Calculates the function's value at x
+     * See the Desmos graph for a proper representation
+     */
+    public double calculate(double x) {
+        return (a * c / (1 + Math.pow(Math.E, -d * (x - h)))) + k;
+    }
 }

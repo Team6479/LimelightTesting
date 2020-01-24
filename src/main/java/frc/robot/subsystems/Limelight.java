@@ -9,13 +9,13 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /**
  * Calculates values based on input from a Limelight
  * @author Leo Wilson
  */
-public class Limelight extends Subsystem {
+public class Limelight extends SubsystemBase {
   /**
    * Available Limelight pipelines (0-9)
    * They start with P to make Java happy
@@ -50,11 +50,5 @@ public class Limelight extends Subsystem {
    */
   public double getArea() {
     return limelightTable.getEntry("ta").getDouble(0);
-  }
-
-  @Override
-  public void initDefaultCommand() {
-    // Set the default command for a subsystem here.
-    // setDefaultCommand(new MySpecialCommand());
   }
 }

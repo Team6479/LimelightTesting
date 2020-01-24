@@ -8,6 +8,10 @@ public class Limelight {
     private static NetworkTable limelightTable =
             NetworkTableInstance.getDefault().getTable("limelight");
 
+    /**
+     * Whether the limelight has any valid targets
+     * @return True if the Limelight has a valid target
+     */
     public static boolean hasTarget() {
         return limelightTable.getEntry("tv").getDouble(0) == 1;
     }
@@ -17,6 +21,7 @@ public class Limelight {
     }
 
     /**
+     * Horizontal Offset From Crosshair To Target 
      * Between -29.8 and 29.8, in degrees
      */
     public static double getXOffset() {
@@ -24,13 +29,15 @@ public class Limelight {
     }
 
     /**
+     * Vertical Offset From Crosshair To Target
      * Between -29.8 and 29.8, in degrees
      */
-    public static double getZOffset() {
-        return limelightTable.getEntry("tz").getDouble(0);
+    public static double getYOffset() {
+        return limelightTable.getEntry("ty").getDouble(0);
     }
 
     /**
+     * Target Area
      * Between 0% and 100% of the screen
      */
     public static double getArea() {

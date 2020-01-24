@@ -34,7 +34,8 @@ public class Drivetrain extends SubsystemBase implements TankDrive {
     right0 = new WPI_TalonSRX(2);
     right1 = new WPI_TalonSRX(3);
 
-    left0.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, 0, 0);
+    left0.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute,
+                                       0, 0);
 
     leftMotors = new SpeedControllerGroup(left0, left1);
     rightMotors = new SpeedControllerGroup(right0, right1);
@@ -44,21 +45,21 @@ public class Drivetrain extends SubsystemBase implements TankDrive {
   public void arcadeDrive(double speed, double rotation) {
     drivetrain.arcadeDrive(speed, rotation);
   }
-  
+
   @Override
   public void tankDrive(double leftSpeed, double rightSpeed) {
     drivetrain.tankDrive(leftSpeed, rightSpeed);
   }
-  
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("DT Left Encoder", left0.getSelectedSensorPosition());
+    SmartDashboard.putNumber("DT Left Encoder",
+                             left0.getSelectedSensorPosition());
   }
 
   @Override
   public void stop() {
     drivetrain.tankDrive(0, 0);
   }
-
 }

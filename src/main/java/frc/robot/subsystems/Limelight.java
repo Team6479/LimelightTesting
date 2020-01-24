@@ -21,14 +21,23 @@ public class Limelight extends SubsystemBase {
    * They start with P to make Java happy
    */
   public enum Pipeline {
-    P0(0), P1(1), P2(2), P3(3), P4(4), P5(5), P6(6), P7(7), P8(8), P9(9);
+    P0(0),
+    P1(1),
+    P2(2),
+    P3(3),
+    P4(4),
+    P5(5),
+    P6(6),
+    P7(7),
+    P8(8),
+    P9(9);
     public int value;
-    private Pipeline(int value) {
-      this.value = value;
-    }
-  };
+    private Pipeline(int value) { this.value = value; }
+  }
+  ;
 
-  NetworkTable limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
+  NetworkTable limelightTable =
+      NetworkTableInstance.getDefault().getTable("limelight");
 
   public boolean hasTarget() {
     return limelightTable.getEntry("tv").getDouble(0) == 1;
@@ -48,7 +57,5 @@ public class Limelight extends SubsystemBase {
   /**
    * Between 0% and 100% of the screen
    */
-  public double getArea() {
-    return limelightTable.getEntry("ta").getDouble(0);
-  }
+  public double getArea() { return limelightTable.getEntry("ta").getDouble(0); }
 }

@@ -20,7 +20,8 @@ import frc.robot.util.Angle;
 import frc.robot.util.Util;
 
 public class Turret extends SubsystemBase {
-  private final double ENCODER_UNITS = 4095; // Range should be 0 - 4095 (aka. 4096 units)
+  private final double ENCODER_UNITS =
+      4095; // Range should be 0 - 4095 (aka. 4096 units)
   private final double UNITS_PER_DEGREE = ENCODER_UNITS / 360;
 
   private TalonSRX motor = new TalonSRX(TurretConstants.motor);
@@ -43,7 +44,8 @@ public class Turret extends SubsystemBase {
     motor.setNeutralMode(NeutralMode.Brake);
 
     // Add Mag Encoders
-    motor.configSelectedFeedbackSensor(FeedbackDevice.PulseWidthEncodedPosition, 0, 0);
+    motor.configSelectedFeedbackSensor(FeedbackDevice.PulseWidthEncodedPosition,
+                                       0, 0);
 
     // Set Inverted and Sensor Phase
     motor.setInverted(false);
@@ -65,7 +67,7 @@ public class Turret extends SubsystemBase {
   }
 
   /**
-   * 
+   *
    * @param angle        Angle for Turret to turn to.
    * @param correctAngle Whether to attempt to correct the angle or not. See
    *                     {@link Turret#correctAngle}.
@@ -79,11 +81,15 @@ public class Turret extends SubsystemBase {
       angle = angleNew;
     } else if (angle > upperLimit) {
       DriverStation.reportWarning(
-          String.format("Attempting to set position exceeding upper limit: %f", angle), false);
+          String.format("Attempting to set position exceeding upper limit: %f",
+                        angle),
+          false);
       angle = upperLimit;
     } else if (angle < lowerLimit) {
       DriverStation.reportWarning(
-          String.format("Attempting to set position exceeding lower limit: %f", angle), false);
+          String.format("Attempting to set position exceeding lower limit: %f",
+                        angle),
+          false);
       angle = lowerLimit;
     }
 
@@ -92,24 +98,22 @@ public class Turret extends SubsystemBase {
   }
 
   /**
-   * 
+   *
    * @param angle Angle for Turret to turn to.
    */
-  public void setPosition(double angle) {
-    setPosition(angle, false);
-  }
+  public void setPosition(double angle) { setPosition(angle, false); }
 
   public void setPercentOutput(double speed) {
-    if (Util.inRange(getCurrentAngle(), upperLimit, 25) || Util.inRange(getCurrentAngle(), lowerLimit, 25)) {
-      
-      motor.set(ControlMode.PercentOutput, 1 - (2 / (1 + Math.pow(Math.E, 0.25 * speed))));
+    if (Util.inRange(getCurrentAngle(), upperLimit, 25) ||
+        Util.inRange(getCurrentAngle(), lowerLimit, 25)) {
+
+      motor.set(ControlMode.PercentOutput,
+                1 - (2 / (1 + Math.pow(Math.E, 0.25 * speed))));
     }
     motor.set(ControlMode.PercentOutput, speed);
   }
 
-  public void stop() {
-    motor.set(ControlMode.PercentOutput, 0);
-  }
+  public void stop() { motor.set(ControlMode.PercentOutput, 0); }
 
   public boolean isCorrected() {
     if (!correction) {
@@ -119,9 +123,9 @@ public class Turret extends SubsystemBase {
   }
 
   /**
-   * Method which attempts to correct the angle of the turret. This is done by attempting to use the
-   * positive/negative inverse angle if possible.
-   * 
+   * Method which attempts to correct the angle of the turret. This is done by
+   * attempting to use the positive/negative inverse angle if possible.
+   *
    * @param angle The angle to correct.
    * @return The angle after corrections.
    */
@@ -137,30 +141,25 @@ public class Turret extends SubsystemBase {
         return inverse;
       } else {
         // If we cant use the inverse we return the closest limit
-        return Angle.getShortestDistance(inverse, upperLimit) < Angle.getShortestDistance(inverse,
-            upperLimit) ? upperLimit : lowerLimit;
+        return Angle.getShortestDistance(inverse, upperLimit) <
+                Angle.getShortestDistance(inverse, upperLimit)
+            ? upperLimit
+            : lowerLimit;
       }
     } else {
       return angle;
     }
   }
 
-  public double getUpperLimit() {
-    return upperLimit;
-  }
+  public double getUpperLimit() { return upperLimit; }
 
-  public double getLowerLimit() {
-    return lowerLimit;
-  }
+  public double getLowerLimit() { return lowerLimit; }
 
   public double getCurrentAngle() {
     return motor.getSelectedSensorPosition() / UNITS_PER_DEGREE;
   }
 
-  public int getPIDError() {
-    return motor.getClosedLoopError();
-  }
-
+  public int getPIDError() { return motor.getClosedLoopError(); }
 
   @Override
   public void periodic() {

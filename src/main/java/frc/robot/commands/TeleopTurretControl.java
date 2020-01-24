@@ -7,12 +7,12 @@
 
 package frc.robot.commands;
 
-import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.Turret;
 import frc.robot.util.Limelight;
+import java.util.function.DoubleSupplier;
 
 public class TeleopTurretControl extends CommandBase {
   private final Turret turret;
@@ -20,11 +20,11 @@ public class TeleopTurretControl extends CommandBase {
   private final Trigger overrideTrigger;
   private final Timer targetLostTimer = new Timer();
 
-
   /**
    * Creates a new AimTurret.
    */
-  public TeleopTurretControl(Turret turret, DoubleSupplier manualAdjustValue, Trigger overrideTrigger) {
+  public TeleopTurretControl(Turret turret, DoubleSupplier manualAdjustValue,
+                             Trigger overrideTrigger) {
     this.turret = turret;
     addRequirements(this.turret);
 
@@ -36,16 +36,18 @@ public class TeleopTurretControl extends CommandBase {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-  }
+  public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (Limelight.hasTarget() && turret.isCorrected() && !overrideTrigger.get()) {
+    if (Limelight.hasTarget() && turret.isCorrected() &&
+        !overrideTrigger.get()) {
       targetLostTimer.reset();
-      turret.setPosition(turret.getCurrentAngle() + Limelight.getXOffset(), true);
-    } else if (targetLostTimer.get() > 1.25 && turret.isCorrected() || overrideTrigger.get()) {
+      turret.setPosition(turret.getCurrentAngle() + Limelight.getXOffset(),
+                         true);
+    } else if (targetLostTimer.get() > 1.25 && turret.isCorrected() ||
+               overrideTrigger.get()) {
       turret.setPercentOutput(manualAdjustValue.getAsDouble());
     }
   }

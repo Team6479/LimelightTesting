@@ -12,7 +12,6 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.team6479.lib.subsystems.TankDrive;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /**
@@ -44,16 +43,15 @@ public class Drivetrain extends SubsystemBase implements TankDrive {
   public void arcadeDrive(double speed, double rotation) {
     drivetrain.arcadeDrive(speed, rotation);
   }
-  
+
   @Override
   public void tankDrive(double leftSpeed, double rightSpeed) {
     drivetrain.tankDrive(leftSpeed, rightSpeed);
   }
-  
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("DT Left Encoder", left0.getSelectedSensorPosition());
   }
 
   @Override

@@ -7,6 +7,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.ArrayList;
+import java.util.function.BooleanSupplier;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -17,17 +19,25 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.util.Angle;
+import frc.robot.util.Sigmoid;
 import frc.robot.util.Util;
 
+/**
+ * Subsystem for controlling a Turret
+ *
+ * @author Thomas Quillan
+ */
 public class Turret extends SubsystemBase {
   private final double ENCODER_UNITS = 4095; // Range should be 0 - 4095 (aka. 4096 units)
   private final double UNITS_PER_DEGREE = ENCODER_UNITS / 360;
+  private final Sigmoid percentOutSigmoid = new Sigmoid(1.0, 2.85, 1.5, true, 1.9755, -0.5);
 
   private TalonSRX motor = new TalonSRX(TurretConstants.motor);
   private double lowerLimit;
   private double upperLimit;
   private boolean correction = false;
   private double goal = 0;
+  private ArrayList<BooleanSupplier> correctionResetConditions = new ArrayList<>();
 
   /**
    * Creates a new Turret.
@@ -53,19 +63,18 @@ public class Turret extends SubsystemBase {
     motor.config_kP(0, 10.5);
     motor.config_kI(0, .0000125);
     motor.config_kD(0, 50);
-    // motor.config_kF(0, .05);
+
+    correctionResetConditions.add(() -> Util.inRange(goal, getCurrentAngle(), 5));
 
     ShuffleboardTab debug = Shuffleboard.getTab("Debug");
     debug.addNumber("Turret Encoder (Units)", motor::getSelectedSensorPosition);
     debug.addNumber("Turret Encoder (Angle)", this::getCurrentAngle);
     debug.addNumber("Turret Error", motor::getClosedLoopError);
     debug.addNumber("Turret Goal", () -> goal);
-
-    // this.setDefaultCommand(new TestTurret(this));
   }
 
   /**
-   * 
+   *
    * @param angle        Angle for Turret to turn to.
    * @param correctAngle Whether to attempt to correct the angle or not. See
    *                     {@link Turret#correctAngle}.
@@ -92,7 +101,7 @@ public class Turret extends SubsystemBase {
   }
 
   /**
-   * 
+   *
    * @param angle Angle for Turret to turn to.
    */
   public void setPosition(double angle) {
@@ -100,10 +109,14 @@ public class Turret extends SubsystemBase {
   }
 
   public void setPercentOutput(double speed) {
-    if (Util.inRange(getCurrentAngle(), upperLimit, 25) || Util.inRange(getCurrentAngle(), lowerLimit, 25)) {
-      
-      motor.set(ControlMode.PercentOutput, 1 - (2 / (1 + Math.pow(Math.E, 0.25 * speed))));
-    }
+    double currentAngle = getCurrentAngle();
+
+    // if (Util.inRange(currentAngle, upperLimit, 25) && speed > 0) {
+    //   speed *= percentOutSigmoid.calculate(Util.getRange(currentAngle, upperLimit));
+    // } else if (Util.inRange(currentAngle, lowerLimit, 25) && speed < 0) {
+    //   speed *= percentOutSigmoid.calculate(Util.getRange(currentAngle, lowerLimit));
+    // }
+
     motor.set(ControlMode.PercentOutput, speed);
   }
 
@@ -111,17 +124,22 @@ public class Turret extends SubsystemBase {
     motor.set(ControlMode.PercentOutput, 0);
   }
 
+  public void clearCorrection() {
+    correction = false;
+  }
+
+  public void addClearCorrectionHook(BooleanSupplier condition) {
+    correctionResetConditions.add(condition);
+  }
+
   public boolean isCorrected() {
-    if (!correction) {
-      return true;
-    }
-    return Util.inRange(getCurrentAngle(), goal, 5);
+    return !correction;
   }
 
   /**
    * Method which attempts to correct the angle of the turret. This is done by attempting to use the
    * positive/negative inverse angle if possible.
-   * 
+   *
    * @param angle The angle to correct.
    * @return The angle after corrections.
    */
@@ -133,7 +151,6 @@ public class Turret extends SubsystemBase {
       double inverse = angle >= 0 ? -360 + angle : 360 + angle;
 
       if (inverse >= lowerLimit && inverse <= upperLimit) {
-        System.out.println(inverse);
         return inverse;
       } else {
         // If we cant use the inverse we return the closest limit
@@ -164,6 +181,14 @@ public class Turret extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called oncgbe per scheduler run
+    // This method will be called once per scheduler run
+    if (correction) {
+      for ( BooleanSupplier condition : correctionResetConditions) {
+        if (condition.getAsBoolean()) {
+          clearCorrection();
+          break;
+        }
+      }
+    }
   }
 }

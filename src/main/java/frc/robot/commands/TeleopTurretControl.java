@@ -37,15 +37,21 @@ public class TeleopTurretControl extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    turret.addClearCorrectionHook(Limelight::hasTarget);
+    turret.addClearCorrectionHook(overrideTrigger::get);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (Limelight.hasTarget() && turret.isCorrected() && !overrideTrigger.get()) {
+    boolean isCorrected = turret.isCorrected();
+    boolean hasTarget = Limelight.hasTarget();
+    boolean isOverridden = overrideTrigger.get();
+
+    if (hasTarget && isCorrected && !isOverridden) {
       targetLostTimer.reset();
       turret.setPosition(turret.getCurrentAngle() + Limelight.getXOffset(), true);
-    } else if (targetLostTimer.get() > 1.25 && turret.isCorrected() || overrideTrigger.get()) {
+    } else if (targetLostTimer.get() > 1.25 && isCorrected || isOverridden) {
       turret.setPercentOutput(manualAdjustValue.getAsDouble());
     }
   }

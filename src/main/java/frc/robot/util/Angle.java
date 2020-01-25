@@ -1,6 +1,8 @@
 package frc.robot.util;
 
 /**
+ * Utility methods for working with angles
+ *
  * @author Thomas Quillan
  */
 public final class Angle {

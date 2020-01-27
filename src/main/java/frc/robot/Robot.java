@@ -95,4 +95,10 @@ public class Robot extends TimedRobot {
   @Override
   public void testPeriodic() {
   }
+
+  @Override
+  public void disabledInit() {
+    // We don't want any lingering corrections after disabling
+    turret.clearCorrection();
+  }
 }

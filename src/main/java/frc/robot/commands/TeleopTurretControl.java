@@ -8,7 +8,6 @@
 package frc.robot.commands;
 
 import java.util.function.DoubleSupplier;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.Turret;
@@ -18,8 +17,8 @@ public class TeleopTurretControl extends CommandBase {
   private final Turret turret;
   private final DoubleSupplier manualAdjustValue;
   private final Trigger overrideTrigger;
-  private final Timer targetLostTimer = new Timer();
 
+  private boolean visionDelayState = false;
 
   /**
    * Creates a new AimTurret.
@@ -30,14 +29,11 @@ public class TeleopTurretControl extends CommandBase {
 
     this.manualAdjustValue = manualAdjustValue;
     this.overrideTrigger = overrideTrigger;
-
-    targetLostTimer.start();
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    turret.addClearCorrectionHook(Limelight::hasTarget);
     turret.addClearCorrectionHook(overrideTrigger::get);
   }
 
@@ -48,10 +44,21 @@ public class TeleopTurretControl extends CommandBase {
     boolean hasTarget = Limelight.hasTarget();
     boolean isOverridden = overrideTrigger.get();
 
-    if (hasTarget && isCorrected && !isOverridden) {
-      targetLostTimer.reset();
+    // We want target searching to begin before correction completes
+    // if (!isCorrected && Util.inRange(goal, currentAngle, goal*.8) && visionDelayState) {
+    if (!isCorrected && !hasTarget && visionDelayState) {
+      visionDelayState = false;
+    }
+
+    if (hasTarget && (isCorrected || !visionDelayState) && !isOverridden) {
+      if (!isCorrected) {
+        turret.clearCorrection();
+      }
       turret.setPosition(turret.getCurrentAngle() + Limelight.getXOffset(), true);
-    } else if (targetLostTimer.get() > 1.25 && isCorrected || isOverridden) {
+      if (turret.isCorrected()) {
+        visionDelayState = true;
+      }
+    } else if (isCorrected || isOverridden) {
       turret.setPercentOutput(manualAdjustValue.getAsDouble());
     }
   }

@@ -30,7 +30,8 @@ import frc.robot.util.Util;
 public class Turret extends SubsystemBase {
   private final double ENCODER_UNITS = 4095; // Range should be 0 - 4095 (aka. 4096 units)
   private final double UNITS_PER_DEGREE = ENCODER_UNITS / 360;
-  private final Sigmoid percentOutSigmoid = new Sigmoid(1.0, 2.85, 1.5, true, 1.9755, -0.5);
+  // private final Sigmoid percentOutSigmoid = new Sigmoid(1.0, 2.85, 1.5, true, 1.9755, -0.5);
+  private final Sigmoid percentOutSigmoid = new Sigmoid(1.0, 4.5, 1.0, true, 10, -0.1);
 
   private TalonSRX motor = new TalonSRX(TurretConstants.motor);
   private double lowerLimit;
@@ -56,15 +57,19 @@ public class Turret extends SubsystemBase {
     motor.configSelectedFeedbackSensor(FeedbackDevice.PulseWidthEncodedPosition, 0, 0);
 
     // Set Inverted and Sensor Phase
-    motor.setInverted(false);
-    motor.setSensorPhase(false);
+    motor.setInverted(true);
+    motor.setSensorPhase(true);
 
     // Set PID Values
+    // motor.config_kP(0, 10.5);
+    // motor.config_kI(0, .0000125);
+    // motor.config_kD(0, 50);
+
     motor.config_kP(0, 10.5);
-    motor.config_kI(0, .0000125);
+    motor.config_kI(0, .0001);
     motor.config_kD(0, 50);
 
-    correctionResetConditions.add(() -> Util.inRange(goal, getCurrentAngle(), 5));
+    correctionResetConditions.add(() -> Util.inRange(goal, getCurrentAngle(), 2));
 
     ShuffleboardTab debug = Shuffleboard.getTab("Debug");
     debug.addNumber("Turret Encoder (Units)", motor::getSelectedSensorPosition);
@@ -111,11 +116,11 @@ public class Turret extends SubsystemBase {
   public void setPercentOutput(double speed) {
     double currentAngle = getCurrentAngle();
 
-    // if (Util.inRange(currentAngle, upperLimit, 25) && speed > 0) {
-    //   speed *= percentOutSigmoid.calculate(Util.getRange(currentAngle, upperLimit));
-    // } else if (Util.inRange(currentAngle, lowerLimit, 25) && speed < 0) {
-    //   speed *= percentOutSigmoid.calculate(Util.getRange(currentAngle, lowerLimit));
-    // }
+    if (speed > 0) {
+      speed *= percentOutSigmoid.calculate(Util.getRange(upperLimit, currentAngle));
+    } else if (speed < 0) {
+      speed *= percentOutSigmoid.calculate(Util.getRange(currentAngle, lowerLimit));
+    }
 
     motor.set(ControlMode.PercentOutput, speed);
   }
@@ -172,6 +177,10 @@ public class Turret extends SubsystemBase {
 
   public double getCurrentAngle() {
     return motor.getSelectedSensorPosition() / UNITS_PER_DEGREE;
+  }
+
+  public double getAngleGoal() {
+    return goal;
   }
 
   public int getPIDError() {

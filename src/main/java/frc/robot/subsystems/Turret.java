@@ -13,7 +13,6 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -79,38 +78,21 @@ public class Turret extends SubsystemBase {
   }
 
   /**
-   *
-   * @param angle        Angle for Turret to turn to.
-   * @param correctAngle Whether to attempt to correct the angle or not. See
-   *                     {@link Turret#correctAngle}.
-   */
-  public void setPosition(double angle, boolean correctAngle) {
-    if (correctAngle) {
-      double angleNew = correctAngle(angle);
-      if (angleNew != angle) {
-        correction = true;
-      }
-      angle = angleNew;
-    } else if (angle > upperLimit) {
-      DriverStation.reportWarning(
-          String.format("Attempting to set position exceeding upper limit: %f", angle), false);
-      angle = upperLimit;
-    } else if (angle < lowerLimit) {
-      DriverStation.reportWarning(
-          String.format("Attempting to set position exceeding lower limit: %f", angle), false);
-      angle = lowerLimit;
-    }
-
-    goal = angle;
-    motor.set(ControlMode.Position, angle * UNITS_PER_DEGREE);
-  }
-
-  /**
+   * Set the position with angle correction applied. See: {@link Turret#correctAngle}.
    *
    * @param angle Angle for Turret to turn to.
    */
   public void setPosition(double angle) {
-    setPosition(angle, false);
+
+    double angleNew = correctAngle(angle);
+    if (angleNew != angle) {
+      correction = true;
+    }
+
+    angle = angleNew;
+    goal = angle;
+
+    motor.set(ControlMode.Position, angle * UNITS_PER_DEGREE);
   }
 
   public void setPercentOutput(double speed) {
@@ -192,7 +174,7 @@ public class Turret extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     if (correction) {
-      for ( BooleanSupplier condition : correctionResetConditions) {
+      for (BooleanSupplier condition : correctionResetConditions) {
         if (condition.getAsBoolean()) {
           clearCorrection();
           break;

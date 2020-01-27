@@ -23,7 +23,7 @@ public class TestTurret extends CommandBase {
     addRequirements(this.turret);
     // Shuffleboard.getTab("Debug").addNumber("Goal", () -> angle);
     angle = turret.getCurrentAngle();
-  } 
+  }
 
   // Called when the command is initially scheduled.
   @Override
@@ -40,7 +40,7 @@ public class TestTurret extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    turret.setPosition(angle, true);
+    turret.setPosition(angle);
   }
 
   // Called once the command ends or is interrupted.

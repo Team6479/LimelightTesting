@@ -54,7 +54,7 @@ public class TeleopTurretControl extends CommandBase {
       if (!isCorrected) {
         turret.clearCorrection();
       }
-      turret.setPosition(turret.getCurrentAngle() + Limelight.getXOffset(), true);
+      turret.setPosition(turret.getCurrentAngle() + Limelight.getXOffset());
       if (turret.isCorrected()) {
         visionDelayState = true;
       }

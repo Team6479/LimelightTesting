@@ -59,6 +59,9 @@ public class Turret extends SubsystemBase {
     motor.setInverted(true);
     motor.setSensorPhase(true);
 
+    // Set the allowable error
+    motor.configAllowableClosedloopError(0, 3);
+
     // Set PID Values
     // motor.config_kP(0, 10.5);
     // motor.config_kI(0, .0000125);
